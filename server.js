@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
 const io = socketIo(server, {
     cors: {
         origin: "*",
@@ -31,6 +32,11 @@ app.use('/api/users', require('./server/routes/users'));
 app.use('/api/stories', require('./server/routes/stories'));
 app.use('/api/chat', require('./server/routes/chat'));
 
+// Home Route
+app.get('/', (req, res) => {
+    res.send('Bharat-Adda Server is Running 🚀');
+});
+
 const Message = require('./server/models/Message');
 
 // Socket.io connection logic
@@ -45,14 +51,17 @@ io.on('connection', (socket) => {
     socket.on('sendMessage', async (data) => {
         try {
             const { senderId, receiverId, text } = data;
+
             const newMessage = new Message({
                 sender: senderId,
                 receiver: receiverId,
                 text
             });
+
             await newMessage.save();
-            
+
             io.to(receiverId).emit('receiveMessage', data);
+
         } catch (err) {
             console.error('Socket error:', err);
         }
@@ -69,6 +78,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 5000;
+
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
