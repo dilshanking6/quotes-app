@@ -25,6 +25,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Home Route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Routes
 app.use('/api/auth', require('./server/routes/auth'));
 app.use('/api/posts', require('./server/routes/posts'));
@@ -32,14 +37,9 @@ app.use('/api/users', require('./server/routes/users'));
 app.use('/api/stories', require('./server/routes/stories'));
 app.use('/api/chat', require('./server/routes/chat'));
 
-// Home Route
-app.get('/', (req, res) => {
-    res.send(__dirname, 'public', 'index.html');
-});
-
 const Message = require('./server/models/Message');
 
-// Socket.io connection logic
+// Socket.io
 io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
 
@@ -72,10 +72,13 @@ io.on('connection', (socket) => {
     });
 });
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+// MongoDB Connection
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 5000;
 
