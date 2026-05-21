@@ -34,7 +34,7 @@ app.use('/api/chat', require('./server/routes/chat'));
 
 // Home Route
 app.get('/', (req, res) => {
-    res.send('Bharat-Adda Server is Running 🚀');
+    res.send(__dirname, 'public', 'index.html');
 });
 
 const Message = require('./server/models/Message');
