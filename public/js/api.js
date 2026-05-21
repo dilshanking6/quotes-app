@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+const API_BASE = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000/api' 
+    : 'https://bharat-adda.onrender.com/api';
 
 const api = {
     async request(endpoint, method = 'GET', body = null, isFormData = false) {
